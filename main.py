@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import threading
 import uvicorn
 
 from aiogram import Bot, Dispatcher
@@ -19,18 +18,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def run_api():
-    import os
-    port = int(os.getenv("API_PORT", "8000"))
-    uvicorn.run(
-        "api.main:app",
-        host="0.0.0.0",
-        port=port,
-        log_level="warning"
-    )
+async def run_bot(bot, dp):
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
 
-async def run_bot():
+async def main():
+    await init_db()
+
     bot = Bot(
         token=BOT_TOKEN,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
@@ -44,18 +39,20 @@ async def run_bot():
     dp.include_router(broadcast.router)
     dp.include_router(user.router)
 
-    await init_db()
+    config = uvicorn.Config(
+        "api.main:app",
+        host="0.0.0.0",
+        port=8000,
+        log_level="warning",
+        loop="asyncio"
+    )
+    server = uvicorn.Server(config)
 
-    logger.info("Bot ishga tushmoqda...")
-    await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot)
-
-
-async def main():
-    api_thread = threading.Thread(target=run_api, daemon=True)
-    api_thread.start()
-    logger.info("FastAPI ishga tushdi")
-    await run_bot()
+    logger.info("Bot va API ishga tushmoqda...")
+    await asyncio.gather(
+        server.serve(),
+        run_bot(bot, dp)
+    )
 
 
 if __name__ == "__main__":
