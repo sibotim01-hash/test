@@ -92,14 +92,15 @@ function renderProducts(products) {
 function productCard(p) {
   const inCart = cartItems.some(c => c.product_id === p.id);
   const imgHtml = p.photo_id
-    ? `<div class="product-img-wrap">
-         <div class="product-img-placeholder">🔧</div>
-         ${p.is_sale ? '<span class="sale-badge">AKSIYA</span>' : ''}
-       </div>`
-    : `<div class="product-img-wrap">
-         <div class="product-img-placeholder">🔧</div>
-         ${p.is_sale ? '<span class="sale-badge">AKSIYA</span>' : ''}
-       </div>`;
+  ? `<div class="product-img-wrap">
+       <img class="product-img" src="/api/photo/${p.photo_id}" 
+            onerror="this.style.display='none'" loading="lazy">
+       ${p.is_sale ? '<span class="sale-badge">AKSIYA</span>' : ''}
+     </div>`
+  : `<div class="product-img-wrap">
+       <div class="product-img-placeholder">🔧</div>
+       ${p.is_sale ? '<span class="sale-badge">AKSIYA</span>' : ''}
+     </div>`;
 
   const oldPrice = p.old_price
     ? `<span class="product-old-price">${formatPrice(p.old_price)}</span>`
