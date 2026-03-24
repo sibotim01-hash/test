@@ -1,4 +1,4 @@
-import aiosqlite
+import asyncpg
 import os
 
 DB_PATH = "asbob_bot.db"
