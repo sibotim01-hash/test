@@ -1,5 +1,15 @@
 import sys
+from aiogram import Bot
 import os
+
+@app.get("/api/photo/{file_id}")
+async def get_photo(file_id: str):
+    from fastapi.responses import RedirectResponse
+    bot = Bot(token=os.getenv("BOT_TOKEN"))
+    file = await bot.get_file(file_id)
+    url = f"https://api.telegram.org/file/bot{os.getenv('BOT_TOKEN')}/{file.file_path}"
+    await bot.session.close()
+    return RedirectResponse(url=url)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import FastAPI, HTTPException
