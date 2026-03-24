@@ -3,8 +3,7 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
 from database.db import (
-    get_brands, get_categories, get_products, get_sale_products,
-    get_brand_by_name, get_category_by_name
+    get_brands, get_categories, get_products, get_sale_products
 )
 from keyboards.keyboards import (
     brands_kb, categories_kb, back_kb, main_menu_kb, product_inline_kb
